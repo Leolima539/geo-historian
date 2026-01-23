@@ -7,12 +7,12 @@ app = "server-bitter-moon-8468"
 primary_region = "lax"
 
 [build]
-  builder = "paketobuildpacks/builder:base"
+  dockerfile = "Dockerfile"
+
 
 [env]
   NODE_ENV = "production"
   PORT = "8080"
-
 
 
 [[services]]
@@ -33,6 +33,7 @@ primary_region = "lax"
   memory_mb = 1024
 
 
-
+[processes]
+  app = "node dist/index.js"
 
 
