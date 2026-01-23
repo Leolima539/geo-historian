@@ -1,0 +1,145 @@
+You are operating in Replit Agent mode on an existing full-stack TypeScript app called Geo-Historian.
+
+Tech stack (do not change unless explicitly instructed):
+
+Frontend: React 18 + Vite + Tailwind + Leaflet
+
+Backend: Express + TypeScript
+
+Database: PostgreSQL + Drizzle ORM
+
+PRIMARY CONSTRAINTS (MUST FOLLOW)
+
+Optimize for near-zero operational cost
+
+Prefer free, open, public data
+
+Avoid adding new paid APIs or services
+
+Make minimal, incremental changes
+
+Do not refactor unrelated code
+
+Remove AI usage instead of replacing it with another paid AI
+
+STEP 1 — REMOVE PAID AI USAGE
+
+Completely remove all OpenAI / AI SDK usage.
+
+Remove environment variables related to AI keys.
+
+Refactor any AI-dependent features to work without AI.
+
+Do not break existing features.
+
+STEP 2 — REPLACE AI WITH FREE DATA
+
+For location descriptions and historical context:
+
+Use Wikipedia REST API for summaries.
+
+Use Wikidata where structured data is helpful.
+
+Cache fetched data in PostgreSQL keyed by location (lat/lng or place ID).
+
+If data exists in cache, do not refetch.
+
+Implement graceful fallback when no data is found.
+
+STEP 3 — ENSURE FREE MAP STACK
+
+Keep Leaflet.
+
+Use OpenStreetMap free tile servers only.
+
+Do not introduce Mapbox or any paid tiles.
+
+STEP 4 — ADD FREE ROUTING (CORE FEATURE)
+
+Implement a new “Best Route” feature using OSRM public demo servers.
+
+Backend
+
+Add a REST endpoint:
+
+GET /api/route
+
+Query params:
+
+startLat
+
+startLng
+
+endLat
+
+endLng
+
+mode = walk | bike | drive
+
+Call OSRM HTTP API.
+
+Return:
+
+GeoJSON route
+
+Distance (meters)
+
+Duration (seconds)
+
+Frontend
+
+Add UI controls:
+
+Click map to select start and end points
+
+Select travel mode
+
+Render the route polyline on the Leaflet map.
+
+Display distance and estimated travel time.
+
+STEP 5 — ROUTE SCORING STRUCTURE
+
+Default to fastest route.
+
+Write routing logic so future scoring can:
+
+Penalize highways
+
+Prefer minor/older roads
+
+Support historical travel constraints
+
+Do not implement advanced scoring yet — only structure for it.
+
+STEP 6 — COST & COMPLEXITY REDUCTION
+
+Remove WebSockets unless strictly required.
+
+Avoid background jobs, queues, or cron.
+
+Cache Wikipedia and routing results aggressively.
+
+WORKFLOW REQUIREMENTS
+
+Work in small, safe steps.
+
+After each major step, ensure the app still runs.
+
+Leave concise comments explaining why changes were made.
+
+Do not redesign UI unless necessary.
+
+FINAL STATE
+
+No paid AI usage
+
+App functions using free public data
+
+Route recommendation works
+
+Codebase is simpler than before
+
+Operational cost is effectively $0
+
+Begin with Step 1 only. Do not proceed to the next step until Step 1 is complete.
