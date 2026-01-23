@@ -12,13 +12,10 @@ primary_region = "lax"
 [env]
   NODE_ENV = "production"
 
-[processes]
-  app = "npm run start"
 
 [[services]]
   internal_port = 8080
   protocol = "tcp"
-  processes = ["app"]
 
   [[services.ports]]
     handlers = ["http"]
@@ -32,6 +29,7 @@ primary_region = "lax"
   cpu_kind = "shared"
   cpus = 1
   memory_mb = 1024
+
 
 
 
