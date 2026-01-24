@@ -1,23 +1,11 @@
-# fly.toml app configuration file generated for server-bitter-moon-8468 on 2026-01-22T18:45:24-08:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = "server-bitter-moon-8468"
 primary_region = "lax"
-
-[build]
-  dockerfile = "Dockerfile"
 
 [env]
   NODE_ENV = "production"
   PORT = "8080"
 
-[processes]
-  app = "node dist/index.js"
-
 [[services]]
-  processes = ["app"]
   internal_port = 8080
   protocol = "tcp"
 
