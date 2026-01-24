@@ -1,70 +1,26 @@
-import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { build as esbuild } from "esbuild";
 
-// server deps to bundle to reduce openat(2) syscalls
-// which helps cold start times
-const allowlist = [
-  "@google/generative-ai",
-  "axios",
-  "connect-pg-simple",
-  "cors",
-  "date-fns",
-  "drizzle-orm",
-  "drizzle-zod",
-  "express",
-  "express-rate-limit",
-  "express-session",
-  "jsonwebtoken",
-  "memorystore",
-  "multer",
-  "nanoid",
-  "nodemailer",
-  "openai",
-  "passport",
-  "passport-local",
-  "pg",
-  "stripe",
-  "uuid",
-  "ws",
-  "xlsx",
-  "zod",
-  "zod-validation-error",
-];
-
-async function buildAll() {
-  await rm("dist", { recursive: true, force: true });
-
-  console.log("building client...");
+async function main() {
+  // Build client (uses vite.config.ts, which outputs to dist/public)
   await viteBuild();
 
-  console.log("building server...");
-  const pkg = JSON.parse(await readFile("package.json", "utf-8"));
-  const allDeps = [
-    ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
-  ];
-  const externals = allDeps.filter((dep) => !allowlist.includes(dep));
-
+  // Build server (bundle server/index.ts -> dist/index.js)
   await esbuild({
-  entryPoints: ["server/index.ts"],
-  platform: "node",
-  bundle: true,
-  format: "esm",
-  outfile: "dist/index.js",
-  target: "node18",
-  define: {
-    "process.env.NODE_ENV": '"production"',
-  },
-  minify: true,
-  external: externals,
-  logLevel: "info",
-});
-
+    entryPoints: ["server/index.ts"],
+    bundle: true,
+    platform: "node",
+    format: "esm",
+    target: "node20",
+    outfile: "dist/index.js",
+    define: {
+      "process.env.NODE_ENV": "\"production\""
+    },
+    external: ["pg-native"]
+  });
 }
 
-buildAll().catch((err) => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-

@@ -1,30 +1,21 @@
-# ---- Builder (needs dev deps for Vite/Tailwind + esbuild) ----
-FROM node:20-slim AS builder
+# syntax=docker/dockerfile:1
+
+FROM node:20-slim
+
 WORKDIR /app
 
+# Install deps (INCLUDING dev deps, because Vite/Tailwind build needs them)
 COPY package.json package-lock.json ./
-# Force-install dev + optional deps (esbuild/rollup platform binaries)
-RUN npm ci --include=dev --include=optional
+RUN npm install --include=dev --include=optional
 
+# Copy the rest of the project and build
 COPY . .
-
-# Builds:
-#  - client -> dist/public (via vite)
-#  - server -> dist/index.js (via esbuild)
 RUN npm run build
 
-
-# ---- Runtime (prod deps only) ----
-FROM node:20-slim AS runner
-WORKDIR /app
+# Remove dev deps after build (smaller production image)
+RUN npm prune --omit=dev && npm cache clean --force
 
 ENV NODE_ENV=production
-
-COPY package.json package-lock.json ./
-# Prod deps + optional deps (native binaries)
-RUN npm ci --omit=dev --include=optional
-
-COPY --from=builder /app/dist ./dist
-
 EXPOSE 8080
+
 CMD ["node", "dist/index.js"]
